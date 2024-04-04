@@ -22,17 +22,19 @@ impl<const I: u16, const R: u16, const F: u16, H> Avx512<I, R, F, H> {
     #[inline]
     #[target_feature(enable = "avx512f")]
     unsafe fn round(&mut self) {
-        let Self { r0, r1, .. } = self;
-        *r1 = _mm512_add_epi32(*r0, *r1);
-        *r0 = _mm512_shuffle_i32x4(*r0, *r0, 0x4E);
-        *r0 = _mm512_rol_epi32(*r0, 7);
-        *r0 = _mm512_xor_epi32(*r0, *r1);
-        *r1 = _mm512_shuffle_epi32(*r1, 0x4E);
-        *r1 = _mm512_add_epi32(*r0, *r1);
-        *r0 = _mm512_permutex_epi64(*r0, 0x4E);
-        *r0 = _mm512_rol_epi32(*r0, 11);
-        *r0 = _mm512_xor_epi32(*r0, *r1);
-        *r1 = _mm512_shuffle_epi32(*r1, 0xB1);
+        let Self { r0, r1, .. } = *self;
+        let r1 = _mm512_add_epi32(r0, r1);
+        let r0 = _mm512_shuffle_i32x4(r0, r0, 0x4E);
+        let r0 = _mm512_rol_epi32(r0, 7);
+        let r0 = _mm512_xor_epi32(r0, r1);
+        let r1 = _mm512_shuffle_epi32(r1, 0x4E);
+        let r1 = _mm512_add_epi32(r0, r1);
+        let r0 = _mm512_permutex_epi64(r0, 0x4E);
+        let r0 = _mm512_rol_epi32(r0, 11);
+        let r0 = _mm512_xor_epi32(r0, r1);
+        let r1 = _mm512_shuffle_epi32(r1, 0xB1);
+        self.r0 = r0;
+        self.r1 = r1;
     }
 }
 

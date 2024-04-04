@@ -24,58 +24,63 @@ impl<const I: u16, const R: u16, const F: u16, H> Avx2<I, R, F, H> {
     #[inline]
     #[target_feature(enable = "avx2")]
     unsafe fn round(&mut self) {
-        let Self { r00, r01, r10, r11, .. } = self;
+        let Self { r00, r01, r10, r11, .. } = *self;
 
         // 1. add
-        *r10 = _mm256_add_epi32(*r10, *r00);
-        *r11 = _mm256_add_epi32(*r11, *r01);
+        let r10 = _mm256_add_epi32(r10, r00);
+        let r11 = _mm256_add_epi32(r11, r01);
 
         // 2. rotate
-        *r00 = _mm256_or_si256(
-            _mm256_slli_epi32(*r00, 7),
-            _mm256_srli_epi32(*r00, 25)
+        let r00 = _mm256_or_si256(
+            _mm256_slli_epi32(r00, 7),
+            _mm256_srli_epi32(r00, 25)
         );
-        *r01 = _mm256_or_si256(
-            _mm256_slli_epi32(*r01, 7),
-            _mm256_srli_epi32(*r01, 25)
+        let r01 = _mm256_or_si256(
+            _mm256_slli_epi32(r01, 7),
+            _mm256_srli_epi32(r01, 25)
         );
 
         // 3. swap
-        mem::swap(r00, r01);
+        let (r00, r01) = (r01, r00);
 
         // 4. xor
-        *r00 = _mm256_xor_si256(*r00, *r10);
-        *r01 = _mm256_xor_si256(*r01, *r11);
+        let r00 = _mm256_xor_si256(r00, r10);
+        let r01 = _mm256_xor_si256(r01, r11);
 
         // 5. swap
-        *r10 = _mm256_shuffle_epi32(*r10, 0x4E);
-        *r11 = _mm256_shuffle_epi32(*r11, 0x4E);
+        let r10 = _mm256_shuffle_epi32(r10, 0x4E);
+        let r11 = _mm256_shuffle_epi32(r11, 0x4E);
 
         // 6. add
-        *r10 = _mm256_add_epi32(*r10, *r00);
-        *r11 = _mm256_add_epi32(*r11, *r01);
+        let r10 = _mm256_add_epi32(r10, r00);
+        let r11 = _mm256_add_epi32(r11, r01);
 
         // 7. rotate
-        *r00 = _mm256_or_si256(
-            _mm256_slli_epi32(*r00, 11),
-            _mm256_srli_epi32(*r00, 21)
+        let r00 = _mm256_or_si256(
+            _mm256_slli_epi32(r00, 11),
+            _mm256_srli_epi32(r00, 21)
         );
-        *r01 = _mm256_or_si256(
-            _mm256_slli_epi32(*r01, 11),
-            _mm256_srli_epi32(*r01, 21)
+        let r01 = _mm256_or_si256(
+            _mm256_slli_epi32(r01, 11),
+            _mm256_srli_epi32(r01, 21)
         );
 
         // 8. swap
-        *r00 = _mm256_permute4x64_epi64(*r00, 0x4E);
-        *r01 = _mm256_permute4x64_epi64(*r01, 0x4E);
+        let r00 = _mm256_permute4x64_epi64(r00, 0x4E);
+        let r01 = _mm256_permute4x64_epi64(r01, 0x4E);
 
         // 9. xor
-        *r00 = _mm256_xor_si256(*r00, *r10);
-        *r01 = _mm256_xor_si256(*r01, *r11);
+        let r00 = _mm256_xor_si256(r00, r10);
+        let r01 = _mm256_xor_si256(r01, r11);
 
         // 10. swap
-        *r10 = _mm256_shuffle_epi32(*r10, 0xB1);
-        *r11 = _mm256_shuffle_epi32(*r11, 0xB1);
+        let r10 = _mm256_shuffle_epi32(r10, 0xB1);
+        let r11 = _mm256_shuffle_epi32(r11, 0xB1);
+
+        self.r00 = r00;
+        self.r01 = r01;
+        self.r10 = r10;
+        self.r11 = r11;
     }
 }
 

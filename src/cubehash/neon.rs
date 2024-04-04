@@ -23,88 +23,96 @@ impl<const I: u16, const R: u16, const F: u16, H> Neon<I, R, F, H> {
     #[inline]
     #[target_feature(enable = "neon")]
     unsafe fn round(&mut self) {
-        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = self;
+        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = *self;
 
         // 1. add
-        *r100 = vaddq_u32(*r100, *r000);
-        *r101 = vaddq_u32(*r101, *r001);
-        *r110 = vaddq_u32(*r110, *r010);
-        *r111 = vaddq_u32(*r111, *r011);
+        let r100 = vaddq_u32(r100, r000);
+        let r101 = vaddq_u32(r101, r001);
+        let r110 = vaddq_u32(r110, r010);
+        let r111 = vaddq_u32(r111, r011);
 
-        // 2-3. rotate, swap
-        {
-            let p000 = *r000;
-            let p001 = *r001;
-            let p010 = *r010;
-            let p011 = *r011;
+        // 2. rotate
+        let r000 = vsriq_n_u32(vshlq_n_u32(r000, 7), r000, 25);
+        let r001 = vsriq_n_u32(vshlq_n_u32(r001, 7), r001, 25);
+        let r010 = vsriq_n_u32(vshlq_n_u32(r010, 7), r010, 25);
+        let r011 = vsriq_n_u32(vshlq_n_u32(r011, 7), r011, 25);
 
-            *r010 = vsriq_n_u32(vshlq_n_u32(p000, 7), p000, 25);
-            *r011 = vsriq_n_u32(vshlq_n_u32(p001, 7), p001, 25);
-            *r000 = vsriq_n_u32(vshlq_n_u32(p010, 7), p010, 25);
-            *r001 = vsriq_n_u32(vshlq_n_u32(p011, 7), p011, 25);
-        }
+        // 3. swap
+        let (r000, r010) = (r010, r000);
+        let (r001, r011) = (r011, r001);
 
         // 4. xor
-        *r000 = veorq_u32(*r000, *r100);
-        *r001 = veorq_u32(*r001, *r101);
-        *r010 = veorq_u32(*r010, *r110);
-        *r011 = veorq_u32(*r011, *r111);
+        let r000 = veorq_u32(r000, r100);
+        let r001 = veorq_u32(r001, r101);
+        let r010 = veorq_u32(r010, r110);
+        let r011 = veorq_u32(r011, r111);
 
         // 5. swap
-        {
-            let f100 = vreinterpretq_f32_u32(*r100);
-            let f101 = vreinterpretq_f32_u32(*r101);
-            let f110 = vreinterpretq_f32_u32(*r110);
-            let f111 = vreinterpretq_f32_u32(*r111);
-
-            *r100 = vreinterpretq_u32_f32(vcombine_f32(
+        let r100 = {
+            let f100 = vreinterpretq_f32_u32(r100);
+            vreinterpretq_u32_f32(vcombine_f32(
                 vget_high_f32(f100),
                 vget_low_f32(f100)
-            ));
-            *r101 = vreinterpretq_u32_f32(vcombine_f32(
+            ))
+        };
+        let r101 = {
+            let f101 = vreinterpretq_f32_u32(r101);
+            vreinterpretq_u32_f32(vcombine_f32(
                 vget_high_f32(f101),
                 vget_low_f32(f101)
-            ));
-            *r110 = vreinterpretq_u32_f32(vcombine_f32(
+            ))
+        };
+        let r110 = {
+            let f110 = vreinterpretq_f32_u32(r110);
+            vreinterpretq_u32_f32(vcombine_f32(
                 vget_high_f32(f110),
                 vget_low_f32(f110)
-            ));
-            *r111 = vreinterpretq_u32_f32(vcombine_f32(
+            ))
+        };
+        let r111 = {
+            let f111 = vreinterpretq_f32_u32(r111);
+            vreinterpretq_u32_f32(vcombine_f32(
                 vget_high_f32(f111),
                 vget_low_f32(f111)
-            ));
-        }
+            ))
+        };
 
         // 6. add
-        *r100 = vaddq_u32(*r100, *r000);
-        *r101 = vaddq_u32(*r101, *r001);
-        *r110 = vaddq_u32(*r110, *r010);
-        *r111 = vaddq_u32(*r111, *r011);
+        let r100 = vaddq_u32(r100, r000);
+        let r101 = vaddq_u32(r101, r001);
+        let r110 = vaddq_u32(r110, r010);
+        let r111 = vaddq_u32(r111, r011);
 
-        // 7-8. rotate, swap
-        {
-            let p000 = *r000;
-            let p001 = *r001;
-            let p010 = *r010;
-            let p011 = *r011;
+        // 7. rotate
+        let r000 = vsriq_n_u32(vshlq_n_u32(r000, 11), r000, 21);
+        let r001 = vsriq_n_u32(vshlq_n_u32(r001, 11), r001, 21);
+        let r010 = vsriq_n_u32(vshlq_n_u32(r010, 11), r010, 21);
+        let r011 = vsriq_n_u32(vshlq_n_u32(r011, 11), r011, 21);
 
-            *r001 = vsriq_n_u32(vshlq_n_u32(p000, 11), p000, 21);
-            *r000 = vsriq_n_u32(vshlq_n_u32(p001, 11), p001, 21);
-            *r011 = vsriq_n_u32(vshlq_n_u32(p010, 11), p010, 21);
-            *r010 = vsriq_n_u32(vshlq_n_u32(p011, 11), p011, 21);
-        }
+        // 8. swap
+        let (r000, r001) = (r001, r000);
+        let (r010, r011) = (r011, r010);
 
         // 9. xor
-        *r000 = veorq_u32(*r000, *r100);
-        *r001 = veorq_u32(*r001, *r101);
-        *r010 = veorq_u32(*r010, *r110);
-        *r011 = veorq_u32(*r011, *r111);
+        let r000 = veorq_u32(r000, r100);
+        let r001 = veorq_u32(r001, r101);
+        let r010 = veorq_u32(r010, r110);
+        let r011 = veorq_u32(r011, r111);
 
         // 10. swap
-        *r100 = vrev64q_u32(*r100);
-        *r101 = vrev64q_u32(*r101);
-        *r110 = vrev64q_u32(*r110);
-        *r111 = vrev64q_u32(*r111);
+        let r100 = vrev64q_u32(r100);
+        let r101 = vrev64q_u32(r101);
+        let r110 = vrev64q_u32(r110);
+        let r111 = vrev64q_u32(r111);
+
+        self.r000 = r000;
+        self.r001 = r001;
+        self.r010 = r010;
+        self.r011 = r011;
+        self.r100 = r100;
+        self.r101 = r101;
+        self.r110 = r110;
+        self.r111 = r111;
     }
 }
 
