@@ -20,7 +20,7 @@ fn profile(gen: CubeHash512) {
         let t0 = unsafe { _rdtsc() };
         compiler_fence(Ordering::SeqCst);
         let mut h = gen.clone();
-        h.update(&data);
+        h.update(data);
         let hash = h.finalize();
         compiler_fence(Ordering::SeqCst);
         let t1 = unsafe { __rdtscp(&mut 0) };
