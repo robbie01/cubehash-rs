@@ -18,4 +18,5 @@ unstable-avx512 = []
 
 [[bin]]
 name = "brunch"
+test = false
 required-features = ["unstable-avx512"]
