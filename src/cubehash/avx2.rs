@@ -31,7 +31,6 @@ impl<const I: u16, const R: u16, const F: u16, H> Avx2<I, R, F, H> {
         *r11 = _mm256_add_epi32(*r11, *r01);
 
         // 2. rotate
-
         *r00 = _mm256_or_si256(
             _mm256_slli_epi32(*r00, 7),
             _mm256_srli_epi32(*r00, 25)
@@ -41,7 +40,7 @@ impl<const I: u16, const R: u16, const F: u16, H> Avx2<I, R, F, H> {
             _mm256_srli_epi32(*r01, 25)
         );
 
-        // 3.  swap
+        // 3. swap
         mem::swap(r00, r01);
 
         // 4. xor
