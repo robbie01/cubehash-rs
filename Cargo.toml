@@ -14,9 +14,10 @@ cfg-if = "1.0"
 default = ["std"]
 std = ["digest/std"]
 zeroize = ["digest/zeroize"]
+selectable-backend = []
 unstable-avx512 = []
 
 [[bin]]
 name = "brunch"
 test = false
-required-features = ["unstable-avx512"]
+required-features = ["unstable-avx512", "selectable-backend"]

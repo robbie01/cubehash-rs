@@ -65,6 +65,7 @@ impl<const I: u16, const R: u16, const F: u16, H> BufferKindUser for CubeHashCor
     type BufferKind = Eager;
 }
 
+#[cfg(feature = "selectable-backend")]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum BackendSelector {
     Soft,
@@ -78,6 +79,7 @@ pub enum BackendSelector {
     Neon
 }
 
+#[cfg(feature = "selectable-backend")]
 impl<const I: u16, const R: u16, const F: u16, H: Unsigned> CubeHashCore<I, R, F, H> {
     pub fn new_with_backend(backend: BackendSelector) -> Option<Self> {
         match backend {

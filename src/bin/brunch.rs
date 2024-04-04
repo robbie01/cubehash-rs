@@ -41,7 +41,7 @@ fn profile(gen: impl Digest + Clone) {
 }
 
 fn main() {
-    //profile(CubeHash512::from_core(CubeHashCore::new_with_backend(CubeHashBackend::Soft).unwrap()));
+    // let soft = CubeHash512::from_core(CubeHashCore::new_with_backend(CubeHashBackend::Soft).unwrap());
     let sse2 = CubeHash512::from_core(CubeHashCore::new_with_backend(CubeHashBackend::Sse2).unwrap());
     let avx2 = CubeHash512::from_core(CubeHashCore::new_with_backend(CubeHashBackend::Avx2).unwrap());
     let avx512 = CubeHash512::from_core(CubeHashCore::new_with_backend(CubeHashBackend::Avx512).unwrap());
@@ -49,6 +49,8 @@ fn main() {
 
     // print!("SHA-512:         ");
     // profile(sha2);
+    // print!("cubehash/soft:   ");
+    // profile(soft);
     print!("cubehash/SSE2:   ");
     profile(sse2);
     print!("cubehash/AVX2:   ");

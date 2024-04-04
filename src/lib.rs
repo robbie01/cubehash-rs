@@ -9,10 +9,11 @@ use digest::{core_api::CoreWrapper, typenum::consts::{U16, U20, U28, U32, U48, U
 
 pub use digest::{self, Digest, Mac, KeyInit};
 
+#[cfg(feature = "selectable-backend")]
 pub use cubehash::BackendSelector as CubeHashBackend;
 
 pub use cubehash::CubeHashCore;
-pub type CubeHash<H> = CoreWrapper<CubeHashCore<16, 16, 32, H>>;
+type CubeHash<H> = CoreWrapper<CubeHashCore<16, 16, 32, H>>;
 pub type CubeHash128 = CubeHash<U16>;
 pub type CubeHash160 = CubeHash<U20>;
 pub type CubeHash224 = CubeHash<U28>;
@@ -21,8 +22,7 @@ pub type CubeHash384 = CubeHash<U48>;
 pub type CubeHash512 = CubeHash<U64>;
 
 pub use cubemac::CubeMacCore;
-pub type CubeMac<H> = CoreWrapper<CubeMacCore<16, 16, 32, H>>;
-pub type CubeMac128 = CubeMac<U16>;
+pub type CubeMac128 = CoreWrapper<CubeMacCore<16, 16, 32, U16>>;
 
 #[cfg(test)]
 mod test {
