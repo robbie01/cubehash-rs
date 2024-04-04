@@ -28,87 +28,96 @@ impl<const I: u16, const R: u16, const F: u16, H> Sse2<I, R, F, H> {
     #[inline]
     #[target_feature(enable = "sse2")]
     unsafe fn round(&mut self) {
-        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = self;
+        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = *self;
 
         // 1. add
-        *r100 = _mm_add_epi32(*r100, *r000);
-        *r101 = _mm_add_epi32(*r101, *r001);
-        *r110 = _mm_add_epi32(*r110, *r010);
-        *r111 = _mm_add_epi32(*r111, *r011);
+        let r100 = _mm_add_epi32(r100, r000);
+        let r101 = _mm_add_epi32(r101, r001);
+        let r110 = _mm_add_epi32(r110, r010);
+        let r111 = _mm_add_epi32(r111, r011);
 
         // 2. rotate
-        *r000 = _mm_or_si128(
-            _mm_slli_epi32(*r000, 7),
-            _mm_srli_epi32(*r000, 25)
+        let r000 = _mm_or_si128(
+            _mm_slli_epi32(r000, 7),
+            _mm_srli_epi32(r000, 25)
         );
-        *r001 = _mm_or_si128(
-            _mm_slli_epi32(*r001, 7),
-            _mm_srli_epi32(*r001, 25)
+        let r001 = _mm_or_si128(
+            _mm_slli_epi32(r001, 7),
+            _mm_srli_epi32(r001, 25)
         );
-        *r010 = _mm_or_si128(
-            _mm_slli_epi32(*r010, 7),
-            _mm_srli_epi32(*r010, 25)
+        let r010 = _mm_or_si128(
+            _mm_slli_epi32(r010, 7),
+            _mm_srli_epi32(r010, 25)
         );
-        *r011 = _mm_or_si128(
-            _mm_slli_epi32(*r011, 7),
-            _mm_srli_epi32(*r011, 25)
+        let r011 = _mm_or_si128(
+            _mm_slli_epi32(r011, 7),
+            _mm_srli_epi32(r011, 25)
         );
         
         // 3. swap
-        mem::swap(r000, r010);
-        mem::swap(r001, r011);
+        let (r000, r010) = (r010, r000);
+        let (r001, r011) = (r011, r001);
 
         // 4. xor
-        *r000 = _mm_xor_si128(*r000, *r100);
-        *r001 = _mm_xor_si128(*r001, *r101);
-        *r010 = _mm_xor_si128(*r010, *r110);
-        *r011 = _mm_xor_si128(*r011, *r111);
+        let r000 = _mm_xor_si128(r000, r100);
+        let r001 = _mm_xor_si128(r001, r101);
+        let r010 = _mm_xor_si128(r010, r110);
+        let r011 = _mm_xor_si128(r011, r111);
 
         // 5. swap
-        *r100 = _mm_shuffle_epi32(*r100, 0x4E);
-        *r101 = _mm_shuffle_epi32(*r101, 0x4E);
-        *r110 = _mm_shuffle_epi32(*r110, 0x4E);
-        *r111 = _mm_shuffle_epi32(*r111, 0x4E);
+        let r100 = _mm_shuffle_epi32(r100, 0x4E);
+        let r101 = _mm_shuffle_epi32(r101, 0x4E);
+        let r110 = _mm_shuffle_epi32(r110, 0x4E);
+        let r111 = _mm_shuffle_epi32(r111, 0x4E);
 
         // 6. add
-        *r100 = _mm_add_epi32(*r100, *r000);
-        *r101 = _mm_add_epi32(*r101, *r001);
-        *r110 = _mm_add_epi32(*r110, *r010);
-        *r111 = _mm_add_epi32(*r111, *r011);
+        let r100 = _mm_add_epi32(r100, r000);
+        let r101 = _mm_add_epi32(r101, r001);
+        let r110 = _mm_add_epi32(r110, r010);
+        let r111 = _mm_add_epi32(r111, r011);
 
         // 7. rotate
-        *r000 = _mm_or_si128(
-            _mm_slli_epi32(*r000, 11),
-            _mm_srli_epi32(*r000, 21)
+        let r000 = _mm_or_si128(
+            _mm_slli_epi32(r000, 11),
+            _mm_srli_epi32(r000, 21)
         );
-        *r001 = _mm_or_si128(
-            _mm_slli_epi32(*r001, 11),
-            _mm_srli_epi32(*r001, 21)
+        let r001 = _mm_or_si128(
+            _mm_slli_epi32(r001, 11),
+            _mm_srli_epi32(r001, 21)
         );
-        *r010 = _mm_or_si128(
-            _mm_slli_epi32(*r010, 11),
-            _mm_srli_epi32(*r010, 21)
+        let r010 = _mm_or_si128(
+            _mm_slli_epi32(r010, 11),
+            _mm_srli_epi32(r010, 21)
         );
-        *r011 = _mm_or_si128(
-            _mm_slli_epi32(*r011, 11),
-            _mm_srli_epi32(*r011, 21)
+        let r011 = _mm_or_si128(
+            _mm_slli_epi32(r011, 11),
+            _mm_srli_epi32(r011, 21)
         );
 
         // 8. swap
-        mem::swap(r000, r001);
-        mem::swap(r010, r011);
+        let (r000, r001) = (r001, r000);
+        let (r010, r011) = (r011, r010);
 
         // 9. xor
-        *r000 = _mm_xor_si128(*r000, *r100);
-        *r001 = _mm_xor_si128(*r001, *r101);
-        *r010 = _mm_xor_si128(*r010, *r110);
-        *r011 = _mm_xor_si128(*r011, *r111);
+        let r000 = _mm_xor_si128(r000, r100);
+        let r001 = _mm_xor_si128(r001, r101);
+        let r010 = _mm_xor_si128(r010, r110);
+        let r011 = _mm_xor_si128(r011, r111);
 
         // 10. swap
-        *r100 = _mm_shuffle_epi32(*r100, 0xB1);
-        *r101 = _mm_shuffle_epi32(*r101, 0xB1);
-        *r110 = _mm_shuffle_epi32(*r110, 0xB1);
-        *r111 = _mm_shuffle_epi32(*r111, 0xB1);
+        let r100 = _mm_shuffle_epi32(r100, 0xB1);
+        let r101 = _mm_shuffle_epi32(r101, 0xB1);
+        let r110 = _mm_shuffle_epi32(r110, 0xB1);
+        let r111 = _mm_shuffle_epi32(r111, 0xB1);
+
+        self.r000 = r000;
+        self.r001 = r001;
+        self.r010 = r010;
+        self.r011 = r011;
+        self.r100 = r100;
+        self.r101 = r101;
+        self.r110 = r110;
+        self.r111 = r111;
     }
 }
 
