@@ -72,7 +72,7 @@ pub enum BackendSelector {
     Sse2,
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     Avx2,
-    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    #[cfg(all(any(target_arch = "x86", target_arch = "x86_64"), feature = "unstable-avx512"))]
     Avx512,
     #[cfg(all(target_arch = "aarch64", target_endian = "little"))]
     Neon
