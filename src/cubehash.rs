@@ -103,18 +103,20 @@ impl<const I: u16, const R: u16, const F: u16, H: Unsigned> Default for CubeHash
                  * 
                  * On znver4 (my desktop), when compiled with -C target-cpu=native,
                  * SSE2 blows AVX2 and AVX512 out of the water. Otherwise, it's AVX2.
+                 * (My guess is AMD went hard into AVX512VL instructions, and therefore
+                 *  SSE2 under VL runs fastest because it maximizes register spread
+                 *  (enabling parallelism) and has less overall operations (because two
+                 *  swaps become nothing))
                  * 
                  * On icelake-server, AVX512 is consistently the winner and performs
                  * equally with and without -C target-cpu=native. With it, SSE2 is
                  * competitive with AVX512. Without, SSE2 and AVX2 perform equally.
                  * (this was virtualized so YMMV)
                  * 
-                 * Assumption: I am a god at using SIMD intrinsics. (I am not. Allegedly
-                 *             AMD's AVX512 is actually pretty good.)
-                 * 
-                 * Conclusion: AVX512 should not be preferred on AMD. High performance
-                 *             applications should seriously consider SSE2+target-cpu=native
-                 *             when using AMD cores.
+                 * Conclusion: AVX512VL is a boon to existing SSE2-intrinsic-using code
+                 *             that performs frequent swapping at a granularity of at
+                 *             least 128 bits (at least on Zen 4). Consider messing with
+                 *             target_feature for performance.
                  * 
                  * Numbers:
                  * 

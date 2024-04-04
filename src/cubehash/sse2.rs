@@ -36,22 +36,27 @@ impl<const I: u16, const R: u16, const F: u16, H> Sse2<I, R, F, H> {
         *r110 = _mm_add_epi32(*r110, *r010);
         *r111 = _mm_add_epi32(*r111, *r011);
 
-        // 2. rotate (part 1)
-        let r000a = _mm_slli_epi32(*r000, 7);
-        let r001a = _mm_slli_epi32(*r001, 7);
-        let r010a = _mm_slli_epi32(*r010, 7);
-        let r011a = _mm_slli_epi32(*r011, 7);
-
-        let r000b = _mm_srli_epi32(*r000, 25);
-        let r001b = _mm_srli_epi32(*r001, 25);
-        let r010b = _mm_srli_epi32(*r010, 25);
-        let r011b = _mm_srli_epi32(*r011, 25);
-
-        // 2-3. rotate (part 2), swap
-        *r010 = _mm_or_si128(r000a, r000b);
-        *r011 = _mm_or_si128(r001a, r001b);
-        *r000 = _mm_or_si128(r010a, r010b);
-        *r001 = _mm_or_si128(r011a, r011b);
+        // 2. rotate
+        *r000 = _mm_or_si128(
+            _mm_slli_epi32(*r000, 7),
+            _mm_srli_epi32(*r000, 25)
+        );
+        *r001 = _mm_or_si128(
+            _mm_slli_epi32(*r001, 7),
+            _mm_srli_epi32(*r001, 25)
+        );
+        *r010 = _mm_or_si128(
+            _mm_slli_epi32(*r010, 7),
+            _mm_srli_epi32(*r010, 25)
+        );
+        *r011 = _mm_or_si128(
+            _mm_slli_epi32(*r011, 7),
+            _mm_srli_epi32(*r011, 25)
+        );
+        
+        // 3. swap
+        mem::swap(r000, r010);
+        mem::swap(r001, r011);
 
         // 4. xor
         *r000 = _mm_xor_si128(*r000, *r100);
@@ -71,22 +76,27 @@ impl<const I: u16, const R: u16, const F: u16, H> Sse2<I, R, F, H> {
         *r110 = _mm_add_epi32(*r110, *r010);
         *r111 = _mm_add_epi32(*r111, *r011);
 
-        // 7. rotate (part 1)
-        let r000a = _mm_slli_epi32(*r000, 11);
-        let r001a = _mm_slli_epi32(*r001, 11);
-        let r010a = _mm_slli_epi32(*r010, 11);
-        let r011a = _mm_slli_epi32(*r011, 11);
+        // 7. rotate
+        *r000 = _mm_or_si128(
+            _mm_slli_epi32(*r000, 11),
+            _mm_srli_epi32(*r000, 21)
+        );
+        *r001 = _mm_or_si128(
+            _mm_slli_epi32(*r001, 11),
+            _mm_srli_epi32(*r001, 21)
+        );
+        *r010 = _mm_or_si128(
+            _mm_slli_epi32(*r010, 11),
+            _mm_srli_epi32(*r010, 21)
+        );
+        *r011 = _mm_or_si128(
+            _mm_slli_epi32(*r011, 11),
+            _mm_srli_epi32(*r011, 21)
+        );
 
-        let r000b = _mm_srli_epi32(*r000, 21);
-        let r001b = _mm_srli_epi32(*r001, 21);
-        let r010b = _mm_srli_epi32(*r010, 21);
-        let r011b = _mm_srli_epi32(*r011, 21);
-
-        // 7-8. rotate (part 2), swap
-        *r001 = _mm_or_si128(r000a, r000b);
-        *r000 = _mm_or_si128(r001a, r001b);
-        *r011 = _mm_or_si128(r010a, r010b);
-        *r010 = _mm_or_si128(r011a, r011b);
+        // 8. swap
+        mem::swap(r000, r001);
+        mem::swap(r010, r011);
 
         // 9. xor
         *r000 = _mm_xor_si128(*r000, *r100);
