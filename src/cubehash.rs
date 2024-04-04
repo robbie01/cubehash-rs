@@ -121,6 +121,7 @@ impl<const I: u16, const R: u16, const F: u16, H: Unsigned> Default for CubeHash
                  * Numbers:
                  * 
                  * Core           | Native | Set    | Cycles/byte
+                 * ---------------+--------+--------+------------
                  * znver4         | No     | SSE2   | 6.3
                  * znver4         | No     | AVX2   | 5.7
                  * znver4         | No     | AVX512 | 6.5
