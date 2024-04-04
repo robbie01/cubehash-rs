@@ -58,8 +58,7 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
     }
 
     #[inline]
-    #[target_feature(enable = "avx")]
-    #[target_feature(enable = "avx512f")]
+    #[target_feature(enable = "avx,avx512f")]
     unsafe fn update_block(&mut self, block: &Array<u8, U32>) {
         let c = _mm512_zextsi256_si512(_mm256_loadu_si256(block.as_ptr() as *const __m256i));
         self.r0 = _mm512_xor_epi32(self.r0, c);

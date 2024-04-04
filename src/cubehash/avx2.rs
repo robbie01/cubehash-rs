@@ -81,8 +81,7 @@ impl<const I: u16, const R: u16, const F: u16, H> Avx2<I, R, F, H> {
 
 impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> for Avx2<I, R, F, H> {
     #[inline]
-    #[target_feature(enable = "avx")]
-    #[target_feature(enable = "avx2")]
+    #[target_feature(enable = "avx,avx2")]
     unsafe fn init() -> Self where H: Unsigned {
         let mut init = Self {
             r00: _mm256_setr_epi32(
@@ -104,8 +103,7 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
     }
 
     #[inline]
-    #[target_feature(enable = "avx")]
-    #[target_feature(enable = "avx2")]
+    #[target_feature(enable = "avx,avx2")]
     unsafe fn update_block(&mut self, block: &Array<u8, U32>) {
         self.r00 = _mm256_xor_si256(self.r00, _mm256_loadu_si256(block.as_ptr() as *const __m256i));
         for _ in 0..R {
@@ -114,8 +112,7 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
     }
 
     #[inline]
-    #[target_feature(enable = "avx")]
-    #[target_feature(enable = "avx2")]
+    #[target_feature(enable = "avx,avx2")]
     unsafe fn finalize(&mut self, out: &mut Array<u8, H>) where H: ArraySize + IsGreater<U0, Output = True> + IsLessOrEqual<U64, Output = True> {
         self.r11 = _mm256_xor_si256(
             self.r11,
