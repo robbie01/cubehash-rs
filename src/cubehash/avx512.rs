@@ -89,3 +89,18 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
         }
     }
 }
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> digest::zeroize::Zeroize for Avx512<I, R, F, H> {
+    fn zeroize(&mut self) {
+        use core::{ptr, sync::atomic::{self, Ordering}};
+
+        let Self { r0, r1, .. } = self;
+
+        // no love for this instruction set :(
+        unsafe { ptr::write_volatile(r0, mem::zeroed()) };
+        atomic::compiler_fence(Ordering::SeqCst);
+        unsafe { ptr::write_volatile(r1, mem::zeroed()) };
+        atomic::compiler_fence(Ordering::SeqCst);
+    }
+}

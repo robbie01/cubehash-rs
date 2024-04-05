@@ -186,3 +186,18 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
         }
     }
 }
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> digest::zeroize::Zeroize for Sse2<I, R, F, H> {
+    fn zeroize(&mut self) {
+        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = self;
+        r000.zeroize();
+        r001.zeroize();
+        r010.zeroize();
+        r011.zeroize();
+        r100.zeroize();
+        r101.zeroize();
+        r110.zeroize();
+        r111.zeroize();
+    }
+}

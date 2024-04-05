@@ -181,3 +181,26 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
         }
     }
 }
+
+#[inline(always)]
+fn zeroize_reg(r: &mut uint32x4_t) {
+    use core::{ptr, sync::atomic::{self, Ordering}};
+
+    unsafe { ptr::write_volatile(r, mem::zeroed()) };
+    atomic::compiler_fence(Ordering::SeqCst);
+}
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> digest::zeroize::Zeroize for Neon<I, R, F, H> {
+    fn zeroize(&mut self) {
+        let Self { r000, r001, r010, r011, r100, r101, r110, r111, .. } = self;
+        zeroize_reg(r000);
+        zeroize_reg(r001);
+        zeroize_reg(r010);
+        zeroize_reg(r011);
+        zeroize_reg(r100);
+        zeroize_reg(r101);
+        zeroize_reg(r110);
+        zeroize_reg(r111);
+    }
+}

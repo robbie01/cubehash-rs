@@ -55,3 +55,16 @@ impl<const I: u16, const R: u16, const F: u16, H: ArraySize + IsGreater<U0, Outp
         self.0.finalize_fixed_core(buffer, out)
     }
 }
+
+#[cfg(feature = "zeroize")]
+use digest::zeroize::{Zeroize, ZeroizeOnDrop};
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> Zeroize for CubeMacCore<I, R, F, H> {
+    fn zeroize(&mut self) {
+        self.0.zeroize();
+    }
+}
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> ZeroizeOnDrop for CubeMacCore<I, R, F, H> {}

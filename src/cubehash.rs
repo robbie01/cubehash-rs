@@ -209,6 +209,36 @@ impl<const I: u16, const R: u16, const F: u16, H: ArraySize + IsGreater<U0, Outp
     }
 }
 
+#[cfg(feature = "zeroize")]
+use digest::zeroize::{Zeroize, ZeroizeOnDrop};
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> Zeroize for CubeHashCore<I, R, F, H> {
+    fn zeroize(&mut self) {
+        match self.0 {
+            #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+            Backend::Sse2(ref mut b) => b.zeroize(),
+            #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+            Backend::Avx2(ref mut b) => b.zeroize(),
+            #[cfg(all(any(target_arch = "x86", target_arch = "x86_64"), feature = "unstable-avx512"))]
+            Backend::Avx512(ref mut b) => b.zeroize(),
+            #[cfg(all(target_arch = "aarch64", target_endian = "little"))]
+            Backend::Neon(ref mut b) => b.zeroize(),
+            Backend::Soft(ref mut b) => b.zeroize()
+        }
+    }
+}
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> Drop for CubeHashCore<I, R, F, H> {
+    fn drop(&mut self) {
+        self.zeroize();
+    }
+}
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> ZeroizeOnDrop for CubeHashCore<I, R, F, H> {}
+
 #[cfg(test)]
 mod test {
     extern crate alloc;

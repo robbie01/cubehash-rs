@@ -93,3 +93,10 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
         }
     }
 }
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> digest::zeroize::Zeroize for Soft<I, R, F, H> {
+    fn zeroize(&mut self) {
+        self.r.zeroize();
+    }
+}

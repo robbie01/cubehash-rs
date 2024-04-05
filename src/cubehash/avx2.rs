@@ -142,3 +142,14 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
         }
     }
 }
+
+#[cfg(feature = "zeroize")]
+impl<const I: u16, const R: u16, const F: u16, H> digest::zeroize::Zeroize for Avx2<I, R, F, H> {
+    fn zeroize(&mut self) {
+        let Self { r00, r01, r10, r11, .. } = self;
+        r00.zeroize();
+        r01.zeroize();
+        r10.zeroize();
+        r11.zeroize();
+    }
+}
