@@ -182,6 +182,7 @@ impl<const I: u16, const R: u16, const F: u16, H> CubeHashBackend<I, R, F, H> fo
     }
 }
 
+#[cfg(feature = "zeroize")]
 #[inline(always)]
 fn zeroize_reg(r: &mut uint32x4_t) {
     use core::{ptr, sync::atomic::{self, Ordering}};
